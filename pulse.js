@@ -3,7 +3,7 @@ var amqp = require('amqp');
 /**
  * Creates a connection to Mozilla Pulse
  */
-function Pulse(name, exchanges, callback)
+function Connection(name, exchanges, callback)
 {
   if (!name) {
     throw "Must provide the unique name for the queue";
@@ -48,8 +48,8 @@ function Pulse(name, exchanges, callback)
   });
 }
 
-Pulse.prototype =
+Connection.prototype =
 {
 };
 
-exports.Pulse = Pulse;
+exports.Connection = Connection;
