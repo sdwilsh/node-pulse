@@ -20,7 +20,7 @@ function Connection(name, exchanges, callback)
     port: 5672,
     login: "public",
     password: "public",
-    vhost: "vhost",
+    vhost: "/",
   });
 
   this.server.addListener("error", function(e) {
