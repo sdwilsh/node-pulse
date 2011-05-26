@@ -1,0 +1,17 @@
+{
+  "name": "pulse",
+  "description": "node.js client for Mozilla Pulse",
+  "version": "0.1.0",
+  "author": "Shawn Wilsher <me@shawnwilsher.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sdwilsh/node-pulse"
+  },
+  "bugs": {
+    "web": "https://github.com/sdwilsh/node-pulse/issues"
+  },
+  "dependencies": {
+    "amqp": ">=0.0.6"
+  },
+  "main": "./pulse"
+}
