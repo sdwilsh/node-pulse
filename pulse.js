@@ -3,7 +3,7 @@ var amqp = require('amqp');
 /**
  * Creates a connection to Mozilla Pulse
  */
-function Connection(exchange, name, callback)
+function Connection(exchange, name, callback, topics)
 {
   if (!exchange) {
     throw "Must provide an exchange to listen to";
@@ -13,6 +13,13 @@ function Connection(exchange, name, callback)
   }
   if (!callback) {
     throw "How can you consume any messages if you don't have a callback?";
+  }
+  if (!topics) {
+    // Default to listen to everything.
+    topics = ["#"];
+  }
+  if (!(topics instanceof Array)) {
+    topics = [topics];
   }
 
   var server = this.server = amqp.createConnection({
@@ -33,7 +40,9 @@ function Connection(exchange, name, callback)
         // Do not declare, just use what is there already.
         passive: true,
     });
-    queue.bind(x, "#");
+    topics.forEach(function(topic) {
+      queue.bind(x, topic);
+    });
 
     queue.subscribe(function(message) {
       try {
