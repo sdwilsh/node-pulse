@@ -40,8 +40,10 @@ function Connection(exchange, name, callback, topics)
         // Do not declare, just use what is there already.
         passive: true,
     });
-    topics.forEach(function(topic) {
-      queue.bind(x, topic);
+    x.addListener("open", function() {
+      topics.forEach(function(topic) {
+        queue.bind(x, topic);
+      });
     });
 
     queue.subscribe(function(message) {
