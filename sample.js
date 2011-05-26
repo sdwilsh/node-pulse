@@ -1,4 +1,4 @@
-var pulse = require("./pulse.js");
+var pulse = require("./pulse");
 
 var callback = function(message) {
   console.info(message);
