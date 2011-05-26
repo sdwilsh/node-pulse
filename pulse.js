@@ -46,7 +46,7 @@ function Pulse(server, name, exchanges, callback)
         console.error(e);
       }
     });
-  }
+  });
 }
 
 Pulse.prototype =
