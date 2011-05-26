@@ -30,17 +30,17 @@ function Connection(exchange, name, callback, topics)
     vhost: "/",
   });
 
-  server.addListener("error", function(e) {
+  server.on("error", function(e) {
     console.error("AMQP ERROR: " + e);
   });
 
-  server.addListener("ready", function() {
+  server.on("ready", function() {
     var queue = server.queue(name);
     var x = server.exchange(exchange, {
         // Do not declare, just use what is there already.
         passive: true,
     });
-    x.addListener("open", function() {
+    x.on("open", function() {
       topics.forEach(function(topic) {
         queue.bind(x, topic);
       });
