@@ -3,13 +3,13 @@ var amqp = require('amqp');
 /**
  * Creates a connection to Mozilla Pulse
  */
-function Connection(name, exchanges, callback)
+function Connection(exchange, name, callback)
 {
+  if (!exchange) {
+    throw "Must provide an exchange to listen to";
+  }
   if (!name) {
     throw "Must provide the unique name for the queue";
-  }
-  if (!exchanges) {
-    throw "Must provide a set of exchanges to listen to";
   }
   if (!callback) {
     throw "How can you consume any messages if you don't have a callback?";
@@ -29,13 +29,11 @@ function Connection(name, exchanges, callback)
 
   server.addListener("ready", function() {
     var queue = server.queue(name);
-    exchanges.forEach(function(exchange) {
-      var x = server.exchange(exchange, {
+    var x = server.exchange(exchange, {
         // Do not declare, just use what is there already.
         passive: true,
-      });
-      queue.bind(x, "#");
     });
+    queue.bind(x, "#");
 
     queue.subscribe(function(message) {
       try {
@@ -52,4 +50,9 @@ Connection.prototype =
 {
 };
 
-exports.Connection = Connection;
+function TestConsumer(name, callback)
+{
+  this.conn = new Connection("org.mozilla.exchange.pulse.test", name, callback);
+}
+exports.TestConsumer = TestConsumer;
+
