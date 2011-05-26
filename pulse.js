@@ -61,9 +61,46 @@ Connection.prototype =
 {
 };
 
+////////////////////////////////////////////////////////////////////////////////
+//// Consumers for various topics
+
 function TestConsumer(name, callback)
 {
   this.conn = new Connection("org.mozilla.exchange.pulse.test", name, callback);
 }
 exports.TestConsumer = TestConsumer;
 
+function MetaConsumer(name, callback, topics)
+{
+  this.conn = new Connection("org.mozilla.exchange.pulse", name, callback,
+                             topics);
+}
+exports.MetaConsumer = MetaConsumer;
+
+function BugzillaConsumer(name, callback, topics)
+{
+  this.conn = new Connection("org.mozilla.exchange.bugzilla", name, callback,
+                             topics);
+}
+exports.BugzillaConsumer = BugzillaConsumer;
+
+function CodeConsumer(name, callback, topics)
+{
+  this.conn = new Connection("org.mozilla.exchange.code", name, callback,
+                             topics);
+}
+exports.CodeConsumer = CodeConsumer;
+
+function HgConsumer(name, callback, topics)
+{
+  this.conn = new Connection("hg.push.mozilla.central", name, callback,
+                             topics);
+}
+exports.HgConsumer = HgConsumer;
+
+function BuildConsumer(name, callback, topics)
+{
+  this.conn = new Connection("org.mozilla.exchange.build", name, callback,
+                             topics);
+}
+exports.BuildConsumer = BuildConsumer;
