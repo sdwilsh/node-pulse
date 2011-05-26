@@ -15,7 +15,7 @@ function Connection(name, exchanges, callback)
     throw "How can you consume any messages if you don't have a callback?";
   }
 
-  this.server = amqp.createConnection({
+  var server = this.server = amqp.createConnection({
     host: "pulse.mozilla.org",
     port: 5672,
     login: "public",
@@ -23,14 +23,14 @@ function Connection(name, exchanges, callback)
     vhost: "/",
   });
 
-  this.server.addListener("error", function(e) {
+  server.addListener("error", function(e) {
     console.error("AMQP ERROR: " + e);
   });
 
-  this.server.addListener("ready", function() {
-    var queue = this.server.queue(name);
+  server.addListener("ready", function() {
+    var queue = server.queue(name);
     exchanges.forEach(function(exchange) {
-      var x = this.server.exchange(exchange, {
+      var x = server.exchange(exchange, {
         // Do not declare, just use what is there already.
         passive: true,
       });
