@@ -3,11 +3,8 @@ var amqp = require('amqp');
 /**
  * Creates a connection to Mozilla Pulse
  */
-function Pulse(server, name, exchanges, callback)
+function Pulse(name, exchanges, callback)
 {
-  if (!server) {
-    throw "Must provide a server to conect to";
-  }
   if (!name) {
     throw "Must provide the unique name for the queue";
   }
@@ -19,9 +16,11 @@ function Pulse(server, name, exchanges, callback)
   }
 
   this.server = amqp.createConnection({
-    host: server,
-    login: "",
-    password: "",
+    host: "pulse.mozilla.org",
+    port: 5672,
+    login: "public",
+    password: "public",
+    vhost: "vhost",
   });
 
   this.server.addListener("error", function(e) {
