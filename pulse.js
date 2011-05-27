@@ -51,7 +51,7 @@ function Connection(exchange, name, callback, topics)
         callback(message);
       }
       catch (e) {
-        console.error(e);
+        console.error(e.stack);
       }
     });
   });
