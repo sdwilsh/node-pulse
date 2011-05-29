@@ -1,18 +1,16 @@
-var amqp = require('amqp');
+var amqp = require("amqp");
+var events = require("events");
 
 /**
  * Creates a connection to Mozilla Pulse
  */
-function Connection(exchange, name, callback, topics)
+function Connection(exchange, name, topics)
 {
   if (!exchange) {
     throw "Must provide an exchange to listen to";
   }
   if (!name) {
     throw "Must provide the unique name for the queue";
-  }
-  if (!callback) {
-    throw "How can you consume any messages if you don't have a callback?";
   }
   if (!topics) {
     // Default to listen to everything.
@@ -22,7 +20,7 @@ function Connection(exchange, name, callback, topics)
     topics = [topics];
   }
 
-  var server = this.server = amqp.createConnection({
+  var server = amqp.createConnection({
     host: "pulse.mozilla.org",
     port: 5672,
     login: "public",
@@ -47,60 +45,60 @@ function Connection(exchange, name, callback, topics)
     });
 
     queue.subscribe(function(message) {
-      try {
-        callback(message);
-      }
-      catch (e) {
-        console.error(e.stack);
-      }
-    });
-  });
+      this.emit("message", message);
+    }.bind(this));
+  }.bind(this));
 }
 
-Connection.prototype =
-{
-};
+Connection.prototype = Object.create(events.EventEmitter.prototype);
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Consumers for various topics
 
-function TestConsumer(name, callback)
+function TestConsumer(name)
 {
-  this.conn = new Connection("org.mozilla.exchange.pulse.test", name, callback);
+  var base = Connection.bind(this);
+  base("org.mozilla.exchange.pulse.test", name);
 }
+TestConsumer.prototype = Object.create(Connection.prototype);
 exports.TestConsumer = TestConsumer;
 
-function MetaConsumer(name, callback, topics)
+function MetaConsumer(name, topics)
 {
-  this.conn = new Connection("org.mozilla.exchange.pulse", name, callback,
-                             topics);
+  var base = Connection.bind(this);
+  base("org.mozilla.exchange.pulse", name, topics);
 }
+MetaConsumer.prototype = Object.create(Connection.prototype);
 exports.MetaConsumer = MetaConsumer;
 
-function BugzillaConsumer(name, callback, topics)
+function BugzillaConsumer(name, topics)
 {
-  this.conn = new Connection("org.mozilla.exchange.bugzilla", name, callback,
-                             topics);
+  var base = Connection.bind(this);
+  base("org.mozilla.exchange.bugzilla", name, topics);
 }
+BugzillaConsumer.prototype = Object.create(Connection.prototype);
 exports.BugzillaConsumer = BugzillaConsumer;
 
-function CodeConsumer(name, callback, topics)
+function CodeConsumer(name, topics)
 {
-  this.conn = new Connection("org.mozilla.exchange.code", name, callback,
-                             topics);
+  var base = Connection.bind(this);
+  base("org.mozilla.exchange.code", name, topics);
 }
+CodeConsumer.prototype = Object.create(Connection.prototype);
 exports.CodeConsumer = CodeConsumer;
 
-function HgConsumer(name, callback, topics)
+function HgConsumer(name, topics)
 {
-  this.conn = new Connection("hg.push.mozilla.central", name, callback,
-                             topics);
+  var base = Connection.bind(this);
+  base("hg.push.mozilla.central", name, topics);
 }
+HgConsumer.prototype = Object.create(Connection.prototype);
 exports.HgConsumer = HgConsumer;
 
-function BuildConsumer(name, callback, topics)
+function BuildConsumer(name, topics)
 {
-  this.conn = new Connection("org.mozilla.exchange.build", name, callback,
-                             topics);
+  var base = Connection.bind(this);
+  base("org.mozilla.exchange.build", name, topics);
 }
+BuildConsumer.prototype = Object.create(Connection.prototype);
 exports.BuildConsumer = BuildConsumer;
