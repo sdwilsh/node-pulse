@@ -20,33 +20,37 @@ function Connection(exchange, name, topics)
     topics = [topics];
   }
 
-  var server = amqp.createConnection({
-    host: "pulse.mozilla.org",
-    port: 5672,
-    login: "public",
-    password: "public",
-    vhost: "/",
-  });
-
-  server.on("error", function(e) {
-    console.error("AMQP ERROR: " + e);
-  });
-
-  server.on("ready", function() {
-    var queue = server.queue(name);
-    var x = server.exchange(exchange, {
-        // Do not declare, just use what is there already.
-        passive: true,
+  // Lazily initialize ourselves when we actually get a listener.
+  this.once("newListener", function() {
+    var server = amqp.createConnection({
+      host: "pulse.mozilla.org",
+      port: 5672,
+      login: "public",
+      password: "public",
+      vhost: "/",
     });
-    x.on("open", function() {
-      topics.forEach(function(topic) {
-        queue.bind(x, topic);
+
+    server.on("error", function(e) {
+      console.error("AMQP ERROR: " + e);
+    });
+
+    server.on("ready", function() {
+      var queue = server.queue(name);
+      var x = server.exchange(exchange, {
+          // Do not declare, just use what is there already.
+          passive: true,
       });
-    });
+      x.on("open", function() {
+        topics.forEach(function(topic) {
+          queue.bind(x, topic);
+        });
+      });
 
-    queue.subscribe(function(message) {
-      this.emit("message", message);
+      queue.subscribe(function(message) {
+        this.emit("message", message);
+      }.bind(this));
     }.bind(this));
+
   }.bind(this));
 }
 
