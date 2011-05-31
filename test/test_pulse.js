@@ -9,12 +9,25 @@ amqp.createConnection = function() {
   return gConnectionEvents = new events.EventEmitter();
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+//// Constants
+
+var kTypes = [
+  "test",
+  "meta",
+  "bugzilla",
+  "code",
+  "hg",
+  "build",
+];
+
 ////////////////////////////////////////////////////////////////////////////////
 //// Test Functions
 
 exports.test_no_work_until_listener = function(test) {
   test.expect(2);
-  var c = new pulse.TestConsumer("test");
+  var c = new pulse.createConsumer("test", "test");
   test.strictEqual(gConnectionEvents, undefined);
 
   c.on("success", function() {});
@@ -23,17 +36,9 @@ exports.test_no_work_until_listener = function(test) {
 };
 
 exports.test_consumer_prototype = function(test) {
-  var types = [
-    "TestConsumer",
-    "MetaConsumer",
-    "BugzillaConsumer",
-    "CodeConsumer",
-    "HgConsumer",
-    "BuildConsumer",
-  ];
-  test.expect(types.length);
-  types.forEach(function(type) {
-    var c = new pulse[type](type);
+  test.expect(kTypes.length);
+  kTypes.forEach(function(type) {
+    var c = new pulse.createConsumer(type, type);
     test.ok(c instanceof events.EventEmitter);
   });
   test.done();
@@ -41,7 +46,7 @@ exports.test_consumer_prototype = function(test) {
 
 exports.test_error_reporting = function(test) {
   test.expect(1);
-  var c = new pulse.TestConsumer("test");
+  var c = new pulse.createConsumer("test", "test");
   var kTestError = { name: "test error" };
   c.on("error", function(e) {
     test.strictEqual(e, kTestError);

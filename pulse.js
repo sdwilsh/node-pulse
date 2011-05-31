@@ -57,52 +57,32 @@ function Connection(exchange, name, topics)
 Connection.prototype = Object.create(events.EventEmitter.prototype);
 
 ////////////////////////////////////////////////////////////////////////////////
-//// Consumers for various topics
+//// Exports
 
-function TestConsumer(name)
-{
-  var base = Connection.bind(this);
-  base("org.mozilla.exchange.pulse.test", name);
-}
-TestConsumer.prototype = Object.create(Connection.prototype);
-exports.TestConsumer = TestConsumer;
+exports.createConsumer = function(type, name, topics) {
+  var exchange;
+  switch (type) {
+    case "test":
+      exchange = "org.mozilla.exchange.pulse.test";
+      break;
+    case "meta":
+      exchange = "org.mozilla.exchange.pulse";
+      break;
+    case "bugzilla":
+      exchange = "org.mozilla.exchange.bugzilla";
+      break;
+    case "code":
+      exchange = "org.mozilla.exchange.code";
+      break;
+    case "hg":
+      exchange = "hg.push.mozilla.central";
+      break;
+    case "build":
+      exchange = "org.mozilla.exchange.build";
+      break;
+    default:
+      throw "Invalid type";
+  }
 
-function MetaConsumer(name, topics)
-{
-  var base = Connection.bind(this);
-  base("org.mozilla.exchange.pulse", name, topics);
-}
-MetaConsumer.prototype = Object.create(Connection.prototype);
-exports.MetaConsumer = MetaConsumer;
-
-function BugzillaConsumer(name, topics)
-{
-  var base = Connection.bind(this);
-  base("org.mozilla.exchange.bugzilla", name, topics);
-}
-BugzillaConsumer.prototype = Object.create(Connection.prototype);
-exports.BugzillaConsumer = BugzillaConsumer;
-
-function CodeConsumer(name, topics)
-{
-  var base = Connection.bind(this);
-  base("org.mozilla.exchange.code", name, topics);
-}
-CodeConsumer.prototype = Object.create(Connection.prototype);
-exports.CodeConsumer = CodeConsumer;
-
-function HgConsumer(name, topics)
-{
-  var base = Connection.bind(this);
-  base("hg.push.mozilla.central", name, topics);
-}
-HgConsumer.prototype = Object.create(Connection.prototype);
-exports.HgConsumer = HgConsumer;
-
-function BuildConsumer(name, topics)
-{
-  var base = Connection.bind(this);
-  base("org.mozilla.exchange.build", name, topics);
-}
-BuildConsumer.prototype = Object.create(Connection.prototype);
-exports.BuildConsumer = BuildConsumer;
+  return new Connection(exchange, name, topics);
+};
