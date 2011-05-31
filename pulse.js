@@ -31,8 +31,8 @@ function Connection(exchange, name, topics)
     });
 
     server.on("error", function(e) {
-      console.error("AMQP ERROR: " + e);
-    });
+      this.emit("error", e);
+    }.bind(this));
 
     server.on("ready", function() {
       var queue = server.queue(name);
