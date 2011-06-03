@@ -29,7 +29,7 @@ exports.test_no_work_until_listener = function(test) {
   var c = new pulse.createConsumer("test", "test");
   test.strictEqual(gConnectionEvents, undefined);
 
-  c.on("success", function() {});
+  c.on("message", function() {});
   test.ok(gConnectionEvents);
   test.done();
 };
