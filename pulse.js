@@ -4,7 +4,7 @@ var events = require("events");
 /**
  * Creates a connection to Mozilla Pulse
  */
-function Connection(exchange, name, topics)
+function Consumer(exchange, name, topics)
 {
   events.EventEmitter.call(this);
 
@@ -56,9 +56,9 @@ function Connection(exchange, name, topics)
   }.bind(this));
 }
 
-Connection.prototype = Object.create(events.EventEmitter.prototype);
+Consumer.prototype = Object.create(events.EventEmitter.prototype);
 
-Connection.prototype.close = function() {
+Consumer.prototype.close = function() {
   // If we are still listening for "newListener", we haven't opened a
   // connection, so there is nothing to close.
   if (this.listeners("newListener").length) {
@@ -98,5 +98,5 @@ exports.createConsumer = function(type, name, topics) {
       throw "Invalid type";
   }
 
-  return new Connection(exchange, name, topics);
+  return new Consumer(exchange, name, topics);
 };
