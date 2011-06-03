@@ -6,6 +6,8 @@ var events = require("events");
  */
 function Connection(exchange, name, topics)
 {
+  events.EventEmitter.call(this);
+
   if (!exchange) {
     throw "Must provide an exchange to listen to";
   }
