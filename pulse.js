@@ -74,9 +74,6 @@ exports.createConsumer = function(type, name, topics) {
     case "code":
       exchange = "org.mozilla.exchange.code";
       break;
-    case "hg":
-      exchange = "hg.push.mozilla.central";
-      break;
     case "build":
       exchange = "org.mozilla.exchange.build";
       break;

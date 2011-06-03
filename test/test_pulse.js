@@ -18,7 +18,6 @@ var kTypes = [
   "meta",
   "bugzilla",
   "code",
-  "hg",
   "build",
 ];
 
