@@ -6,6 +6,22 @@ This is a node.js library for listening to Mozilla Pulse messages.
 
     npm install pulse
 
+## Usage
+
+```
+var pulse = require("pulse");
+
+var callback = function(message) {
+  console.info("Success!  Your connection works, and you just recieved this:");
+  console.info(message);
+  console.info("Now closing connection...");
+  conn.close();
+}
+
+var conn = pulse.createConsumer("test", "node-pulse-test");
+conn.on("message", callback);
+```
+
 ## Consumers
 
 Consumers are created by the `createConsumer` method and are instances of `events.EventEmitter`.  `Consumer`s emit two events:
