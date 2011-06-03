@@ -24,7 +24,7 @@ function Connection(exchange, name, topics)
 
   // Lazily initialize ourselves when we actually get a listener.
   this.once("newListener", function() {
-    var server = amqp.createConnection({
+    var server = this._server = amqp.createConnection({
       host: "pulse.mozilla.org",
       port: 5672,
       login: "public",
@@ -57,6 +57,21 @@ function Connection(exchange, name, topics)
 }
 
 Connection.prototype = Object.create(events.EventEmitter.prototype);
+
+Connection.prototype.close = function() {
+  // If we are still listening for "newListener", we haven't opened a
+  // connection, so there is nothing to close.
+  if (this.listeners("newListener").length) {
+    return;
+  }
+
+  if (!this._server) {
+    throw new Error("Trying to close a connection that was already closed!");
+  }
+
+  this._server.end();
+  delete this._server;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Exports

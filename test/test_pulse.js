@@ -6,7 +6,9 @@ var events = require("events");
 // does not actually try to connect to pulse.
 gConnectionEvents = undefined;
 amqp.createConnection = function() {
-  return gConnectionEvents = new events.EventEmitter();
+  var conn = new events.EventEmitter();
+  conn.end = function() { this.closed = true; };
+  return gConnectionEvents = conn;
 };
 
 
@@ -52,4 +54,25 @@ exports.test_error_reporting = function(test) {
     test.done();
   });
   gConnectionEvents.emit("error", kTestError);
+};
+
+exports.test_close = function(test) {
+  test.expect(6);
+
+  // Closing an unopened connection should not throw.
+  var c = new pulse.createConsumer("test", "test");
+  test.doesNotThrow(function() { c.close(); });
+  test.strictEqual(gConnectionEvents.closed, undefined);
+
+  // Closing an opened connection should not throw and clear out _server.
+  c = new pulse.createConsumer("test", "test");
+  c.on("message", function() {});
+  test.doesNotThrow(function() { c.close(); });
+  test.ok(gConnectionEvents.closed);
+  test.strictEqual(c._server, undefined);
+
+  // Closing an already closed connection should throw though.
+  test.throws(function() { c.close(); });
+
+  test.done();
 };
