@@ -6,17 +6,35 @@ This is a node.js library for listening to Mozilla Pulse messages.
 
     npm install pulse
 
-## Usage
+## Consumers
 
-Exports the following consumers:
+Consumers are created by the `createConsumer` method and are instances of `events.EventEmitter`.  `Consumer`s emit two events:
 
-* `TestConsumer` - messages on the `org.mozilla.exchange.pulse.test` exchange.
-* `MetaConsumer` - messages on the `org.mozilla.exchange.pulse` exchange.
-* `BugzillaConsumer` - messages on the `org.mozilla.exchange.bugzilla` exchange.
-* `CodeConsumer` - messages on the `org.mozilla.exchange.code` exchange.
-* `HgConsumer` - messages on the `hg.push.mozilla.central` exchange.
-* `BuildConsumer` - messages on the `org.mozilla.exchange.build` exchange.
+* message
+* error
 
-With the exception of `TestConsumer` which only takes a queue name, all consumers take a queue name and an array of topics on the exchange that they should listen to.  Each consumer is an `EventEmitter` that will emit `message` events for each new message.
+### createConsumer(type, name [, topics])
 
-See `sample.js` for an example using `TestConsumer`.
+Creates a `Consumer` with the queue name `name` and listens to all the topics specified by the `topics`.  `topics` can be an array of topics, a single topic, or if omitted, will default to all topics on the exchange (`#`).  This method supports the following arguments for `type`:
+
+* `test` - binds to messages on the `org.mozilla.exchange.pulse.test` exchange.
+* `meta` - binds to messages on the `org.mozilla.exchange.pulse` exchange.
+* `bugzilla` - binds to messages on the `org.mozilla.exchange.bugzilla` exchange.
+* `code` - binds to messages on the `org.mozilla.exchange.code` exchange.
+* `build` - binds to messages on the `org.mozilla.exchange.build` exchange.
+
+### Consumer.close()
+
+Closes the connection to the Pulse server.
+
+### Event: message
+
+`function(message) { }`
+
+Dispatched whenever a new message is received from Pulse.
+
+### Event: error
+
+`function(error) { }`
+
+Dispatched whenever this is an amqp error with the connection.
