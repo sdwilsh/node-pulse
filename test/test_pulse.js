@@ -58,14 +58,16 @@ module.exports = testCase({
 
   test_error_reporting: function(test)
   {
-    test.expect(1);
+    test.expect(2);
     var c = new pulse.createConsumer("test", "test");
+    var spy = sinon.spy();
+    c.on("error", spy);
+
     var kTestError = { name: "test error" };
-    c.on("error", function(e) {
-      test.strictEqual(e, kTestError);
-      test.done();
-    });
     this.connection.emit("error", kTestError);
+    test.ok(spy.calledOnce);
+    test.ok(spy.calledWith(kTestError));
+    test.done();
   },
 
   test_close: function(test)
